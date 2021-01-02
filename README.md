@@ -54,6 +54,39 @@ Sometimes, you may want to ensure that a variable is defined while making it opt
 {% endif %}
 ```
 
+#### Arrays
+You can also check if a variable is an array of a given type by using the `array of` keywords:
+
+```twig
+{% require array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+
+{% for foo in ARRAY %}
+...
+{% endfor %}
+```
+
+Arrays can also be nullable:
+```twig
+{% require nullable array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+
+{% if ARRAY != null %}
+...
+{% endif %}
+```
+
+Or contain nullable elements:
+```twig
+{% require array of nullable 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+
+{% for foo in ARRAY %}
+    {% if foo != null %}
+    ...
+    {% endif %}
+{% endfor %}
+```
+
+_Note: Checking array's items type might induce a slight overhead, but unless you have thousands of elements it should be negligible._
+
 ## License
 
 _Twig PowerPack_ is licensed under MIT license. See LICENSE file.
