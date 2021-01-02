@@ -1,0 +1,33 @@
+{
+    "name": "mediagone/twig-powerpack",
+    "type": "library",
+    "description": "Provides type-safety and useful helpers to your Twig templates.",
+    "keywords": ["twig", "extension", "quality"],
+    "license": "MIT",
+    "authors": [
+        {"name": "Bruce Suire", "role": "Developer"}
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Mediagone\\Twig\\PowerPack\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Mediagone\\Twig\\PowerPack\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.4",
+        "twig/twig": "^2.12|^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "scripts": {
+        "tests": "phpunit -c phpunit.xml.dist --testsuite Unit_Tests"
+    }
+}
