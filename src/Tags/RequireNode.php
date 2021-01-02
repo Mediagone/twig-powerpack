@@ -4,6 +4,7 @@ namespace Mediagone\Twig\PowerPack\Tags;
 
 use Twig\Compiler;
 use Twig\Node\Node;
+use function in_array;
 
 
 final class RequireNode extends Node
@@ -106,10 +107,17 @@ final class RequireNode extends Node
         $nullableCondition = $this->isSubtypeNullable ? ' && $item !== null' : '';
         $nullableText = $this->isSubtypeNullable ? ' or NULL' : '';
         
-        $compiler->write("// Check array items type\n");
+        if (in_array($subType, ['string', 'bool', 'int', 'float'], true)) {
+            $condition = "is_$subType(\$item)$nullableCondition";
+        }
+        else {
+            $condition = "\$item instanceof \\$subType$nullableCondition";
+        }
+        
+        $compiler->write("// Check type of array items\n");
         $compiler->write("array_map(static function(\$item) use(\$contextVariable, \$templateName) {\n");
         $compiler->indent();
-        $compiler->write("if (! is_$subType(\$item)$nullableCondition) {\n");
+        $compiler->write("if (! $condition) {\n");
         $compiler->indent();
         $compiler->write("\$type = is_object(\$item) ? get_class(\$item) : gettype(\$item);\n");
         $compiler->write("throw new \Exception('Context variable \"$this->variableName\" must only contain $subType$nullableText elements (got: '.\$type.') in '.\$templateName);\n");
@@ -134,11 +142,11 @@ final class RequireNode extends Node
     {
         $compiler->write("// Check if class instance\n");
         if ($this->isNullable) {
-            $compiler->write("if (! \$contextVariable instanceof $this->typeName && \$contextVariable !== null) {\n")->indent();
+            $compiler->write("if (! \$contextVariable instanceof \\$this->typeName && \$contextVariable !== null) {\n")->indent();
             $compiler->write("\$requiredType = '\"$this->typeName\" or NULL';\n");
         }
         else {
-            $compiler->write("if (! \$contextVariable instanceof $this->typeName) {\n")->indent();
+            $compiler->write("if (! \$contextVariable instanceof \\$this->typeName) {\n")->indent();
             $compiler->write("\$requiredType = '\"$this->typeName\"';\n");
         }
         $compiler->write("\$type = is_object(\$contextVariable) ? get_class(\$contextVariable) : gettype(\$contextVariable);\n");

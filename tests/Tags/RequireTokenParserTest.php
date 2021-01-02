@@ -253,6 +253,13 @@ final class RequireTokenParserTest extends TestCase
         yield ['?float', [null]];
         yield ['?float', [1.234, null]];
         yield ['?float', [null, 1.234]];
+        
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", []];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [new Foo()]];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [new Foo(), new Foo()]];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null]];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [new Foo(), null]];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null, new Foo()]];
     }
     
     /**
@@ -276,45 +283,60 @@ final class RequireTokenParserTest extends TestCase
     
     public function invalidArrayProvider()
     {
-        yield ['string', ['Lorem ipsum', 1]];
-        yield ['string', ['Lorem ipsum', 1.234]];
-        yield ['string', ['Lorem ipsum', true]];
+        yield ['string', [1]];
+        yield ['string', [1.234]];
+        yield ['string', [true]];
+        yield ['string', [new Foo()]];
+        yield ['string', [null]];
         yield ['string', ['Lorem ipsum', null]];
-        yield ['string', ['Lorem ipsum', new Foo()]];
         yield ['?string', [null, 1]];
         yield ['?string', [null, 1.234]];
         yield ['?string', [null, true]];
         yield ['?string', [null, new Foo()]];
-    
-        yield ['bool', ['Lorem ipsum', 1]];
-        yield ['bool', ['Lorem ipsum', 1.234]];
-        yield ['bool', ['Lorem ipsum', 'true']];
-        yield ['bool', ['Lorem ipsum', null]];
-        yield ['bool', ['Lorem ipsum', new Foo()]];
+        
+        yield ['bool', [1]];
+        yield ['bool', [1.234]];
+        yield ['bool', ['true']];
+        yield ['bool', [new Foo()]];
+        yield ['bool', [null]];
+        yield ['bool', [true, null]];
         yield ['?bool', [null, 1]];
         yield ['?bool', [null, 1.234]];
         yield ['?bool', [null, 'true']];
         yield ['?bool', [null, new Foo()]];
-    
-        yield ['int', ['Lorem ipsum', '1']];
-        yield ['int', ['Lorem ipsum', 1.234]];
-        yield ['int', ['Lorem ipsum', true]];
-        yield ['int', ['Lorem ipsum', null]];
-        yield ['int', ['Lorem ipsum', new Foo()]];
+        
+        yield ['int', ['1']];
+        yield ['int', [1.234]];
+        yield ['int', [true]];
+        yield ['int', [new Foo()]];
+        yield ['int', [null]];
+        yield ['int', [1, null]];
         yield ['?int', [null, '1']];
         yield ['?int', [null, 1.234]];
         yield ['?int', [null, true]];
         yield ['?int', [null, new Foo()]];
     
-        yield ['float', ['Lorem ipsum', 1]];
-        yield ['float', ['Lorem ipsum', '1.234']];
-        yield ['float', ['Lorem ipsum', true]];
-        yield ['float', ['Lorem ipsum', null]];
-        yield ['float', ['Lorem ipsum', new Foo()]];
+        yield ['float', [1]];
+        yield ['float', ['1.234']];
+        yield ['float', [true]];
+        yield ['float', [new Foo()]];
+        yield ['float', [null]];
+        yield ['float', [1.234, null]];
         yield ['?float', [null, 1]];
         yield ['?float', [null, '1.234']];
         yield ['?float', [null, true]];
         yield ['?float', [null, new Foo()]];
+    
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", ['']];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [1]];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [1.234]];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [true]];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null]];
+        yield ["Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [new Foo(), null]];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null, '']];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null, 1]];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null, 1.234]];
+        yield ["?Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo", [null, true]];
     }
     
     /**
