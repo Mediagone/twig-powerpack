@@ -1,5 +1,7 @@
 # Twig PowerPack
 
+⚠️ This project is in experimental phase, the API may change any time.
+
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Software License][ico-license]](LICENSE)
