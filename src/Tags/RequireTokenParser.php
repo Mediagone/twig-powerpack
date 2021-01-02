@@ -12,7 +12,7 @@ use Twig\TokenParser\AbstractTokenParser;
 /**
  * Ensure that a typed context variable is provided to the template.
  *
- *    {% require 'App\UI\ViewModels\Foo' as FOO %}
+ *    {% require 'App\\UI\\ViewModels\Foo' as FOO %}
  */
 final class RequireTokenParser extends AbstractTokenParser
 {
