@@ -12,10 +12,17 @@ This package provides:
 This package requires **PHP 7.4+** and **Twig 2+**.
 
 Add it as Composer dependency:
-
 ```sh
 $ composer require mediagone/twig-powerpack
 ```
+If you're using Symfony, enable the extension in `services.yaml`:
+```yaml
+services:
+    
+    Mediagone\Twig\PowerPack\TwigPowerPackExtension:
+        tags: [twig.extension]
+```
+
 
 ## Features
 
