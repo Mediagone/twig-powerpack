@@ -357,4 +357,23 @@ final class RequireTokenParserTest extends TestCase
     }
     
     
+    public function test_array_cannot_be_null() : void
+    {
+        $this->env->addTokenParser(new RequireTokenParser());
+        
+        $this->expectException(Exception::class);
+        $this->env->createTemplate("{% require array of 'string' as ARRAY %}")->render(['ARRAY' => null]);
+    }
+    
+    
+    public function test_array_can_be_nullable() : void
+    {
+        $this->env->addTokenParser(new RequireTokenParser());
+        
+        $result = $this->env->createTemplate("{% require nullable array of 'string' as ARRAY %}")->render(['ARRAY' => null]);
+        self::assertSame('', $result);
+    }
+    
+    
+    
 }
