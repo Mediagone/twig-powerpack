@@ -18,6 +18,25 @@ use function substr;
 final class RequireTokenParserTest extends TestCase
 {
     //========================================================================================================
+    // INIT
+    //========================================================================================================
+    
+    private Environment $env;
+    
+    protected function setUp() : void
+    {
+        $this->env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), [
+            'debug' => true,
+            'cache' => false,
+            'autoescape' => false,
+            'strict_variables' => true,
+            'optimizations' => 0,
+        ]);
+    }
+    
+    
+    
+    //========================================================================================================
     // PRIMITIVE TYPES
     //========================================================================================================
     
@@ -40,8 +59,7 @@ final class RequireTokenParserTest extends TestCase
      */
     public function test_primitive_variable_is_expected(string $type, $value) : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
     
         $nullable = '';
         if ($type[0] === '?') {
@@ -49,7 +67,7 @@ final class RequireTokenParserTest extends TestCase
             $type = substr($type, 1);
         }
         
-        $result = $env->createTemplate("{% require $nullable'$type' as VAR %}")->render(['VAR' => $value]);
+        $result = $this->env->createTemplate("{% require $nullable'$type' as VAR %}")->render(['VAR' => $value]);
         
         self::assertSame('', $result);
     }
@@ -84,11 +102,10 @@ final class RequireTokenParserTest extends TestCase
      */
     public function test_primitive_variable_is_invalid(string $type, $value) : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
         $this->expectException(Exception::class);
-        $env->createTemplate("{% require '$type' as VAR %}")->render(['VAR' => $value]);
+        $this->env->createTemplate("{% require '$type' as VAR %}")->render(['VAR' => $value]);
     }
     
     
@@ -98,21 +115,19 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_php_class_is_defined() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
-        $result = $env->createTemplate('{% require "DateTime" as DATETIME %}')->render(['DATETIME' => new DateTime()]);
+        $result = $this->env->createTemplate('{% require "DateTime" as DATETIME %}')->render(['DATETIME' => new DateTime()]);
         
         self::assertSame('', $result);
     }
     
     public function test_php_class_is_missing() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
         $this->expectException(Exception::class);
-        $env->createTemplate('{% require "DateTime" as DATETIME %}')->render([]);
+        $this->env->createTemplate('{% require "DateTime" as DATETIME %}')->render([]);
     }
     
     
@@ -122,21 +137,19 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_custom_class_is_defined() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
-        $result = $env->createTemplate('{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}')->render(['FOO' => new Foo()]);
+        $result = $this->env->createTemplate('{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}')->render(['FOO' => new Foo()]);
         
         self::assertSame('', $result);
     }
     
     public function test_custom_class_is_missing() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
         $this->expectException(Exception::class);
-        $result = $env->createTemplate('{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}')->render([]);
+        $this->env->createTemplate('{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}')->render([]);
     }
     
     
@@ -146,10 +159,9 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_multiple_classes_are_defined() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
-        $result = $env->createTemplate(
+        $result = $this->env->createTemplate(
             '{% require "DateTime" as DATETIME %}'
                    .'{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}'
         )->render([
@@ -162,11 +174,10 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_multiple_classes_one_is_missing() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
         $this->expectException(Exception::class);
-        $env->createTemplate(
+        $this->env->createTemplate(
             '{% require "DateTime" as DATETIME %}'
                    .'{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}'
         )->render([
@@ -181,10 +192,9 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_can_be_nullable() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
-        $result = $env->createTemplate(
+        $result = $this->env->createTemplate(
             '{% require nullable "DateTime" as DATETIME %}'
                    .'{% require nullable "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}'
         )->render([
@@ -197,11 +207,10 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_can_be_nullable_but_one_is_missing() : void
     {
-        $env = new Environment($this->getMockBuilder(LoaderInterface::class)->getMock(), ['cache' => false, 'autoescape' => false, 'optimizations' => 0]);
-        $env->addTokenParser(new RequireTokenParser());
+        $this->env->addTokenParser(new RequireTokenParser());
         
         $this->expectException(Exception::class);
-        $env->createTemplate(
+        $this->env->createTemplate(
             '{% require nullable "DateTime" as DATETIME %}'
                    .'{% require nullable "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}'
         )->render([
@@ -209,6 +218,121 @@ final class RequireTokenParserTest extends TestCase
         ]);
     }
     
+    
+    //========================================================================================================
+    // ARRAY
+    //========================================================================================================
+    
+    public function validArrayProvider()
+    {
+        yield ['string', []];
+        yield ['string', ['Lorem ipsum']];
+        yield ['string', ['Lorem ipsum', 'Lorem ipsum']];
+        yield ['?string', [null]];
+        yield ['?string', ['Lorem ipsum', null]];
+        yield ['?string', [null, 'Lorem ipsum']];
+        
+        yield ['bool', []];
+        yield ['bool', [true]];
+        yield ['bool', [false]];
+        yield ['bool', [true, false]];
+        yield ['?bool', [null]];
+        yield ['?bool', [true, null]];
+        yield ['?bool', [null, true]];
+        
+        yield ['int', []];
+        yield ['int', [1]];
+        yield ['int', [1, 2]];
+        yield ['?int', [null]];
+        yield ['?int', [1, null]];
+        yield ['?int', [null, 1]];
+        
+        yield ['float', []];
+        yield ['float', [1.234]];
+        yield ['float', [1.234, 2.345]];
+        yield ['?float', [null]];
+        yield ['?float', [1.234, null]];
+        yield ['?float', [null, 1.234]];
+    }
+    
+    /**
+     * @dataProvider validArrayProvider
+     */
+    public function test_array_of_type_is_expected(string $type, $value) : void
+    {
+        $this->env->addTokenParser(new RequireTokenParser());
+        
+        $nullable = '';
+        if ($type[0] === '?') {
+            $nullable = 'nullable ';
+            $type = substr($type, 1);
+        }
+        
+        $result = $this->env->createTemplate("{% require array of $nullable'$type' as VAR %}")->render(['VAR' => $value]);
+        
+        self::assertSame('', $result);
+    }
+    
+    
+    public function invalidArrayProvider()
+    {
+        yield ['string', ['Lorem ipsum', 1]];
+        yield ['string', ['Lorem ipsum', 1.234]];
+        yield ['string', ['Lorem ipsum', true]];
+        yield ['string', ['Lorem ipsum', null]];
+        yield ['string', ['Lorem ipsum', new Foo()]];
+        yield ['?string', [null, 1]];
+        yield ['?string', [null, 1.234]];
+        yield ['?string', [null, true]];
+        yield ['?string', [null, new Foo()]];
+    
+        yield ['bool', ['Lorem ipsum', 1]];
+        yield ['bool', ['Lorem ipsum', 1.234]];
+        yield ['bool', ['Lorem ipsum', 'true']];
+        yield ['bool', ['Lorem ipsum', null]];
+        yield ['bool', ['Lorem ipsum', new Foo()]];
+        yield ['?bool', [null, 1]];
+        yield ['?bool', [null, 1.234]];
+        yield ['?bool', [null, 'true']];
+        yield ['?bool', [null, new Foo()]];
+    
+        yield ['int', ['Lorem ipsum', '1']];
+        yield ['int', ['Lorem ipsum', 1.234]];
+        yield ['int', ['Lorem ipsum', true]];
+        yield ['int', ['Lorem ipsum', null]];
+        yield ['int', ['Lorem ipsum', new Foo()]];
+        yield ['?int', [null, '1']];
+        yield ['?int', [null, 1.234]];
+        yield ['?int', [null, true]];
+        yield ['?int', [null, new Foo()]];
+    
+        yield ['float', ['Lorem ipsum', 1]];
+        yield ['float', ['Lorem ipsum', '1.234']];
+        yield ['float', ['Lorem ipsum', true]];
+        yield ['float', ['Lorem ipsum', null]];
+        yield ['float', ['Lorem ipsum', new Foo()]];
+        yield ['?float', [null, 1]];
+        yield ['?float', [null, '1.234']];
+        yield ['?float', [null, true]];
+        yield ['?float', [null, new Foo()]];
+    }
+    
+    /**
+     * @dataProvider invalidArrayProvider
+     */
+    public function test_array_contains_invalid_elements(string $type, $value) : void
+    {
+        $this->env->addTokenParser(new RequireTokenParser());
+        
+        $nullable = '';
+        if ($type[0] === '?') {
+            $nullable = 'nullable ';
+            $type = substr($type, 1);
+        }
+        
+        $this->expectException(Exception::class);
+        $this->env->createTemplate("{% require array of $nullable'$type' as VAR %}")->render(['VAR' => $value]);
+    }
     
     
 }
