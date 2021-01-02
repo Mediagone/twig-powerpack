@@ -115,17 +115,14 @@ final class RequireNode extends Node
         }
         
         $compiler->write("// Check type of array items\n");
-        $compiler->write("array_map(static function(\$item) use(\$contextVariable, \$templateName) {\n");
-        $compiler->indent();
-        $compiler->write("if (! $condition) {\n");
-        $compiler->indent();
+        $compiler->write("if (is_array(\$contextVariable)) {\n")->indent();
+        $compiler->write("array_map(static function(\$item) use(\$contextVariable, \$templateName) {\n")->indent();
+        $compiler->write("if (! $condition) {\n")->indent();
         $compiler->write("\$type = is_object(\$item) ? get_class(\$item) : gettype(\$item);\n");
         $compiler->write("throw new \Exception('Context variable \"$this->variableName\" must only contain $subType$nullableText elements (got: '.\$type.') in '.\$templateName);\n");
-        $compiler->outdent();
-        $compiler->write("}\n");
-        $compiler->outdent();
-        
-        $compiler->write("}, \$contextVariable);\n");
+        $compiler->outdent()->write("}\n");
+        $compiler->outdent()->write("}, \$contextVariable);\n");
+        $compiler->outdent()->write("}\n");
     }
     
     
