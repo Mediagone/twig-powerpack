@@ -8,6 +8,7 @@
 
 This package provides:
 - Type-safety checks for context variables (`require` tag)
+- Register global data/resources from any template.
 
 
 ## Installation
@@ -95,6 +96,126 @@ Or contain nullable elements:
 ```
 
 _Note: Checking array's items type might induce a slight overhead, but unless you have thousands of elements it should be negligible._
+
+
+
+### 2) Register global data from any template
+
+You may occasionally declare specific data in your templates, used in the global scope. For example if your templates require optional CSS or JavaScript resources you only want to include on demand.
+
+#### String Data
+
+Short string data can be registered from anywhere in your templates using the `{% register <data> in <registry> %}` tag:
+```twig
+// Page.twig
+
+{% extends 'Layout.twig' %}
+
+{% register '/css/few-styles.css' in 'styles' %}
+{% register '/css/some-styles.css' in 'styles' %}
+
+{% register '/js/custom-scripts.js' in 'scripts' %}
+
+...
+```
+
+And retrieved elsewhere through the `registry()` function:
+```html
+// Layout.twig
+
+<html>
+    <head>
+        ...
+        
+        {% for css in registry('styles') %}
+        <link rel="stylesheet" href="{{ css }}" />
+        {% endfor %}
+        <!--
+        <link rel="stylesheet" href="/css/few-styles.css" />
+        <link rel="stylesheet" href="/css/some-styles.css" />
+        -->
+    </head>
+    <body>
+        ...
+        
+        {% for js in registry('scripts') %}
+        <script src="{{ js }}"></script>
+        {% endfor %}
+        <!--
+        <script src="/js/custom-scripts.js"></script>
+        -->
+    </body>
+</html>
+```
+
+
+#### Optional registry clause
+
+For convenience, the registry name can be automatically inferred from the data when it represents a _path with an extension_, making usage of `in <registry>` optional. The following lines are equivalent:
+
+```twig
+{% register '/styles.css' in 'css' %}
+{% register '/styles.css' %}
+```
+
+
+#### Body Data
+Because you may need longer or dynamically generated data, the tag also supports a block syntax to allow a content body to be provided. In this case you _cannot_ define data in the opening tag and _the registry clause is mandatory_:
+`{% register in <registry> %} <body data> {% endregister %}`
+
+For example if you want to declare inline scripts from a template:
+```twig
+// Page.twig
+{% extends 'Layout.twig' %}
+
+{% set name = 'world' %}
+
+{% register in 'inlineJs' %}
+    alert('Hello {{ name }}');
+{% endregister %}
+```
+And include it at the end of the html page:
+```html
+// Layout.twig
+
+<html>
+    <body>
+        ...
+    
+        <script>
+        {% for js in registry('inlineJs') %}
+            {{ js }}
+        {% endfor %}
+        <!-- alert('Hello world'); -->
+        </script>
+    </body>
+</html>
+```
+
+
+#### Unicity
+
+Data can be declared as unique, so if multiple templates register the same resource, it will be included only once. Just add the `once` keyword to the tag:
+
+```twig
+{% register once '/styles.css' %} 
+
+// Subsequent identical statements will be ignored
+{% register once '/styles.css' %}
+```
+
+It also works with body data:
+```twig
+{% register once '/styles.css' %}
+{% register once in 'css' %}/styles.css{% register %}  // ignored
+```
+
+However, unicity is only enforced **within the same registry**, so both following statements will be taken into account:
+```twig
+{% register once '/styles.css' in 'css' %}
+{% register once '/styles.css' in 'styles' %}
+```
+
 
 ## License
 
