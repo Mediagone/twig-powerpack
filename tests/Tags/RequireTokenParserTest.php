@@ -32,6 +32,8 @@ final class RequireTokenParserTest extends TestCase
             'strict_variables' => true,
             'optimizations' => 0,
         ]);
+        
+        $this->env->addTokenParser(new RequireTokenParser());
     }
     
     
@@ -59,8 +61,6 @@ final class RequireTokenParserTest extends TestCase
      */
     public function test_primitive_variable_is_expected(string $type, $value) : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-    
         $nullable = '';
         if ($type[0] === '?') {
             $nullable = 'nullable ';
@@ -102,8 +102,6 @@ final class RequireTokenParserTest extends TestCase
      */
     public function test_primitive_variable_is_invalid(string $type, $value) : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $this->expectException(Exception::class);
         $this->env->createTemplate("{% require '$type' as VAR %}")->render(['VAR' => $value]);
     }
@@ -115,8 +113,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_php_class_is_defined() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $result = $this->env->createTemplate('{% require "DateTime" as DATETIME %}')->render(['DATETIME' => new DateTime()]);
         
         self::assertSame('', $result);
@@ -124,8 +120,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_php_class_is_missing() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $this->expectException(Exception::class);
         $this->env->createTemplate('{% require "DateTime" as DATETIME %}')->render([]);
     }
@@ -137,8 +131,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_custom_class_is_defined() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $result = $this->env->createTemplate('{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}')->render(['FOO' => new Foo()]);
         
         self::assertSame('', $result);
@@ -146,8 +138,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_custom_class_is_missing() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $this->expectException(Exception::class);
         $this->env->createTemplate('{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}')->render([]);
     }
@@ -159,8 +149,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_multiple_classes_are_defined() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $result = $this->env->createTemplate(
             '{% require "DateTime" as DATETIME %}'
                    .'{% require "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}'
@@ -174,8 +162,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_multiple_classes_one_is_missing() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $this->expectException(Exception::class);
         $this->env->createTemplate(
             '{% require "DateTime" as DATETIME %}'
@@ -192,8 +178,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_can_be_nullable() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $result = $this->env->createTemplate(
             '{% require nullable "DateTime" as DATETIME %}'
                    .'{% require nullable "Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\Foo" as FOO %}'
@@ -207,8 +191,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_can_be_nullable_but_one_is_missing() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $this->expectException(Exception::class);
         $this->env->createTemplate(
             '{% require nullable "DateTime" as DATETIME %}'
@@ -267,8 +249,6 @@ final class RequireTokenParserTest extends TestCase
      */
     public function test_array_of_type_is_expected(string $type, $value) : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $nullable = '';
         if ($type[0] === '?') {
             $nullable = 'nullable ';
@@ -344,8 +324,6 @@ final class RequireTokenParserTest extends TestCase
      */
     public function test_array_contains_invalid_elements(string $type, $value) : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $nullable = '';
         if ($type[0] === '?') {
             $nullable = 'nullable ';
@@ -359,8 +337,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_array_cannot_be_null() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $this->expectException(Exception::class);
         $this->env->createTemplate("{% require array of 'string' as ARRAY %}")->render(['ARRAY' => null]);
     }
@@ -368,8 +344,6 @@ final class RequireTokenParserTest extends TestCase
     
     public function test_array_can_be_nullable() : void
     {
-        $this->env->addTokenParser(new RequireTokenParser());
-        
         $result = $this->env->createTemplate("{% require nullable array of 'string' as ARRAY %}")->render(['ARRAY' => null]);
         self::assertSame('', $result);
     }
