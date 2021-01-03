@@ -7,7 +7,7 @@
 [![Software License][ico-license]](LICENSE)
 
 This package provides:
-- Type-safety checks for context variables (`require` tag)
+- Type-safety checks for template context variables.
 - Register global data/resources from any template.
 
 
@@ -29,9 +29,9 @@ services:
 
 ## Features
 
-### Require (Tag)
+### 1) Context Variables type-checking
 
-Templates usually require specific context variables, but there is no native way to check the type of supplied data. This tag allows you to **declare expected variables** in your Twig files, making them also **self-documenting**. If the data is invalid, an exception will be thrown.
+Templates usually require specific external data, but there is no native way to check the type of supplied variables. The `require` tag allows you to **declare expected variables** in your Twig files, making them also **self-documenting**. If the data is invalid, an exception will be thrown.
 
 #### Primitive types
 Supported scalar types are: _bool, float, int_ and _string_.
