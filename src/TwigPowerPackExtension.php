@@ -2,6 +2,7 @@
 
 namespace Mediagone\Twig\PowerPack;
 
+use Mediagone\Twig\PowerPack\Tags\RegisterTokenParser;
 use Mediagone\Twig\PowerPack\Tags\RequireTokenParser;
 use Twig\Extension\AbstractExtension;
 
@@ -21,6 +22,7 @@ final class TwigPowerPackExtension extends AbstractExtension
     public function getTokenParsers() : array
     {
         return [
+            new RegisterTokenParser(),
             new RequireTokenParser(),
         ];
     }
