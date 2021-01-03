@@ -31,6 +31,8 @@ final class RegisterTokenParserTest extends TestCase
             'optimizations' => 0,
         ]);
         
+        $this->env->addTokenParser(new RegisterTokenParser());
+        
         RegisterRegistry::clear();
     }
     
@@ -42,8 +44,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_can_register_data_in_different_registries() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         self::assertCount(0, RegisterRegistry::read('styles'));
         
         $this->env->createTemplate("{% register '/styles.css' in 'styles' %}")->render();
@@ -66,8 +66,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_can_infer_registry_name_from_path() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         self::assertCount(0, RegisterRegistry::read('css'));
         
         $this->env->createTemplate("{% register '/styles.css' %}")->render();
@@ -81,8 +79,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_registry_name_is_mandatory_if_not_inferable_from_path() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         $this->expectException(SyntaxError::class);
         $this->env->createTemplate("{% register 'this_is_not_a_path' %}")->render();
     }
@@ -90,8 +86,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_same_data_can_be_registered_multiple_times() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         self::assertCount(0, RegisterRegistry::read('css'));
         
         $this->env->createTemplate("{% register '/styles.css' %}")->render();
@@ -108,8 +102,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_same_data_can_be_registered_only_once() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         self::assertCount(0, RegisterRegistry::read('css'));
         
         $this->env->createTemplate("{% register once '/styles.css' %}")->render();
@@ -128,8 +120,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_can_parse_body_data() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         $this->env->createTemplate("{% register in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'Hello world']);
         $this->env->createTemplate("{% register in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'Buzz!']);
         
@@ -144,8 +134,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_can_register_body_multiple_times() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-        
         $this->env->createTemplate("{% register in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'Hello world']);
         $this->env->createTemplate("{% register in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'Hello world']);
         
@@ -160,8 +148,6 @@ final class RegisterTokenParserTest extends TestCase
     
     public function test_can_register_body_only_once() : void
     {
-        $this->env->addTokenParser(new RegisterTokenParser());
-    
         $this->env->createTemplate("{% register once in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'Hello world']);
         $this->env->createTemplate("{% register once in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'Hello world']);
         
