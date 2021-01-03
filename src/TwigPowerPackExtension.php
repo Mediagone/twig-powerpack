@@ -2,9 +2,11 @@
 
 namespace Mediagone\Twig\PowerPack;
 
+use Mediagone\Twig\PowerPack\Tags\RegisterRegistry;
 use Mediagone\Twig\PowerPack\Tags\RegisterTokenParser;
 use Mediagone\Twig\PowerPack\Tags\RequireTokenParser;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 
 final class TwigPowerPackExtension extends AbstractExtension
@@ -16,6 +18,14 @@ final class TwigPowerPackExtension extends AbstractExtension
     public function getName() : string
     {
         return 'TwigPowerPackExtension';
+    }
+    
+    
+    public function getFunctions() : array
+    {
+        return [
+            new TwigFunction('registry', [new RegisterRegistry(), 'read']),
+        ];
     }
     
     
