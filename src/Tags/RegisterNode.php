@@ -16,6 +16,8 @@ final class RegisterNode extends Node
     
     private bool $unique;
     
+    private Node $body;
+    
     
     
     //========================================================================================================
@@ -26,7 +28,9 @@ final class RegisterNode extends Node
     {
         $this->registryName = $registryName;
         $this->unique = $unique;
-        parent::__construct(['body' => $body], [], $lineno, $tag);
+        $this->body = $body;
+        
+        parent::__construct([], [], $lineno, $tag);
     }
     
     
@@ -38,7 +42,7 @@ final class RegisterNode extends Node
     public function compile(Compiler $compiler)
     {
         $compiler->write("ob_start();\n");
-        $compiler->subcompile($this->getNode('body'));
+        $compiler->subcompile($this->body);
         $compiler->write('$content = ob_get_clean();' . PHP_EOL);
         if ($this->unique) {
             $compiler->write('\\' . RegisterRegistry::class . "::register('$this->registryName', \$content, \$content);" . PHP_EOL);
