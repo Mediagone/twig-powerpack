@@ -95,6 +95,11 @@ Or contain nullable elements:
 {% endfor %}
 ```
 
+And even nullable array of nullable elements!
+```twig
+{% require nullable array of nullable 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+```
+
 _Note: Checking array's items type might induce a slight overhead, but unless you have thousands of elements it should be negligible._
 
 

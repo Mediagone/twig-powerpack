@@ -349,5 +349,12 @@ final class RequireTokenParserTest extends TestCase
     }
     
     
+    public function test_array_can_be_nullable_with_nullable_elements() : void
+    {
+        $result = $this->env->createTemplate("{% require nullable array of nullable 'string' as ARRAY %}")->render(['ARRAY' => null]);
+        self::assertSame('', $result);
+    }
+    
+    
     
 }
