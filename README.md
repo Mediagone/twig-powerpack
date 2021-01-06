@@ -101,7 +101,7 @@ _Note: Checking array's items type might induce a slight overhead, but unless yo
 
 ### 2) Register global data from any template
 
-You may occasionally declare specific data in your templates, used in the global scope. For example if your templates require optional CSS or JavaScript resources you only want to include on demand.
+You may occasionally declare specific data in your templates, used in the global scope. For example if your templates dynamically add CSS classes to HTML body, or if they require optional CSS or JavaScript resources you only want to include on demand.
 
 #### String Data
 
@@ -110,6 +110,9 @@ Short string data can be registered from anywhere in your templates using the `{
 // Page.twig
 
 {% extends 'Layout.twig' %}
+
+{% register 'has-menu' in 'bodyClasses' %}
+{% register 'responsive' in 'bodyClasses' %}
 
 {% register '/css/few-styles.css' in 'styles' %}
 {% register '/css/some-styles.css' in 'styles' %}
@@ -130,20 +133,17 @@ And retrieved elsewhere through the `registry()` function:
         {% for css in registry('styles') %}
         <link rel="stylesheet" href="{{ css }}" />
         {% endfor %}
-        <!--
-        <link rel="stylesheet" href="/css/few-styles.css" />
-        <link rel="stylesheet" href="/css/some-styles.css" />
-        -->
+        <!-- <link rel="stylesheet" href="/css/few-styles.css" /> -->
+        <!-- <link rel="stylesheet" href="/css/some-styles.css" /> -->
     </head>
-    <body>
+    <body class="{{ registry('bodyClasses')|join(' ') }}">
+    <!-- <body class="has-menu responsive"> -->
         ...
         
         {% for js in registry('scripts') %}
         <script src="{{ js }}"></script>
         {% endfor %}
-        <!--
-        <script src="/js/custom-scripts.js"></script>
-        -->
+        <!-- <script src="/js/custom-scripts.js"></script> -->
     </body>
 </html>
 ```
@@ -195,7 +195,7 @@ And include it at the end of the html page:
 
 #### Unicity
 
-Data can be declared as unique, so if multiple templates register the same resource, it will be included only once. Just add the `once` keyword to the tag:
+Data can be declared as unique, so if multiple templates register the same value, it will be included only once. It's required most of the time, just add the `once` keyword to the tag:
 
 ```twig
 {% register once '/styles.css' %} 
