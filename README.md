@@ -7,8 +7,8 @@
 [![Software License][ico-license]](LICENSE)
 
 This package provides:
-- Type-safety checks for template context variables.
-- Register global data/resources from any template.
+1. [Type-safety checks for template context variables](#feat1).
+2. [Register global data/resources from any template](#feat2).
 
 
 ## Installation
@@ -29,7 +29,7 @@ services:
 
 ## Features
 
-### 1) Context Variables type-checking
+### <a name="feat1"></a>1) Context Variables type-checking
 
 Templates usually require specific external data, but there is no native way to check the type of supplied variables. The `require` tag allows you to **declare expected variables** in your Twig files, making them also **self-documenting**. If the data is invalid, an exception will be thrown.
 
@@ -104,7 +104,7 @@ _Note: Checking array's items type might induce a slight overhead, but unless yo
 
 
 
-### 2) Register global data from any template
+### <a name="feat2"></a>2) Register global data from any template
 
 You may occasionally declare specific data in your templates, used in the global scope. For example if your templates dynamically add CSS classes to HTML body, or if they require optional CSS or JavaScript resources you only want to include on demand.
 
