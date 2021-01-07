@@ -31,7 +31,7 @@ services:
 
 ### <a name="feat1"></a>1) Context Variables type-checking
 
-Templates usually require specific external data, but there is no native way to check the type of supplied variables. The `require` tag allows you to **declare expected variables** in your Twig files, making them also **self-documenting**. If the data is invalid, an exception will be thrown.
+Templates usually require specific external data, but there is no native way to check the type of supplied variables. The `expect` tag allows you to **declare required variables** in your Twig files, making them also **self-documenting**. If the data is invalid, an exception will be thrown.
 
 #### Primitive types
 Supported scalar types are: _bool, float, int_ and _string_.
@@ -39,17 +39,17 @@ Supported scalar types are: _bool, float, int_ and _string_.
 ```twig
 {% extends 'layout.twig' %}
 
-{% require 'string' as TITLE %}
-{% require 'bool' as ENABLED %}
-{% require 'float' as AMOUNT %}
-{% require 'int' as COUNT %}
+{% expect 'string' as TITLE %}
+{% expect 'bool' as ENABLED %}
+{% expect 'float' as AMOUNT %}
+{% expect 'int' as COUNT %}
 ```
 _Note: TITLE, ENABLED, AMOUNT and COUNT represent the names of required variables._
 
 #### Objects
 Because they don't guarantee any data structure, anonymous objects (_stdClass_) are not supported. However, usage of named classes is strongly encouraged to expose data in your templates. Therefore, a _Fully Qualified Class Name_ (FQCN) can also be supplied:
 ```twig
-{% require 'App\\UI\\ViewModels\\Foo' as FOO %}
+{% expect 'App\\UI\\ViewModels\\Foo' as FOO %}
 
 {{ FOO.bar }}
 ```
@@ -57,7 +57,7 @@ Because they don't guarantee any data structure, anonymous objects (_stdClass_) 
 #### Nullable
 Sometimes, you may want to ensure that a variable is defined while making it optional by using the `nullable` keyword:
 ```twig
-{% require nullable 'App\\UI\\ViewModels\\Foo' as FOO %}
+{% expect nullable 'App\\UI\\ViewModels\\Foo' as FOO %}
 
 {% if FOO != null %}
 ...
@@ -68,7 +68,7 @@ Sometimes, you may want to ensure that a variable is defined while making it opt
 You can also check if a variable is an array of a given type by using the `array of` keywords:
 
 ```twig
-{% require array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+{% expect array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
 
 {% for foo in ARRAY %}
 ...
@@ -77,7 +77,7 @@ You can also check if a variable is an array of a given type by using the `array
 
 Arrays can also be nullable:
 ```twig
-{% require nullable array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+{% expect nullable array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
 
 {% if ARRAY != null %}
 ...
@@ -97,7 +97,7 @@ Or contain nullable elements:
 
 And even nullable array of nullable elements!
 ```twig
-{% require nullable array of nullable 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+{% expect nullable array of nullable 'App\\UI\\ViewModels\\Foo' as ARRAY %}
 ```
 
 _Note: Checking array's items type might induce a slight overhead, but unless you have thousands of elements it should be negligible._

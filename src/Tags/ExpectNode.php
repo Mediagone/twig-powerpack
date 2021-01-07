@@ -7,7 +7,7 @@ use Twig\Node\Node;
 use function in_array;
 
 
-final class RequireNode extends Node
+final class ExpectNode extends Node
 {
     //========================================================================================================
     // Properties

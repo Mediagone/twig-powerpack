@@ -4,7 +4,7 @@ namespace Mediagone\Twig\PowerPack;
 
 use Mediagone\Twig\PowerPack\Tags\RegisterRegistry;
 use Mediagone\Twig\PowerPack\Tags\RegisterTokenParser;
-use Mediagone\Twig\PowerPack\Tags\RequireTokenParser;
+use Mediagone\Twig\PowerPack\Tags\ExpectTokenParser;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -33,7 +33,7 @@ final class TwigPowerPackExtension extends AbstractExtension
     {
         return [
             new RegisterTokenParser(),
-            new RequireTokenParser(),
+            new ExpectTokenParser(),
         ];
     }
     

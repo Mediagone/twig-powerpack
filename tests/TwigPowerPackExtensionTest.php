@@ -42,7 +42,7 @@ final class TwigPowerPackExtensionTest extends TestCase
     
     public function test_require_tag_is_enabled() : void
     {
-        self::assertTrue(isset($this->env->getTags()['require']));
+        self::assertTrue(isset($this->env->getTags()['expect']));
     }
     
     

@@ -12,9 +12,9 @@ use Twig\TokenParser\AbstractTokenParser;
 /**
  * Ensure that a typed context variable is provided to the template.
  *
- *    {% require 'App\\UI\\ViewModels\Foo' as FOO %}
+ *    {% expect 'App\\UI\\ViewModels\Foo' as FOO %}
  */
-final class RequireTokenParser extends AbstractTokenParser
+final class ExpectTokenParser extends AbstractTokenParser
 {
     //========================================================================================================
     // Methods
@@ -28,13 +28,13 @@ final class RequireTokenParser extends AbstractTokenParser
         
         if ($stream->nextIf('array') !== null) {
             if (! $stream->nextIf('of')) {
-                throw new SyntaxError('Missing "of" keyword is required after "require array" expression', $stream->getCurrent()->getLine(), $stream->getSourceContext());
+                throw new SyntaxError('Missing "of" keyword is required after "expect array" expression', $stream->getCurrent()->getLine(), $stream->getSourceContext());
             }
             
             $isSubtypeNullable = $stream->nextIf('nullable') !== null;
             $subtype = $this->parser->getExpressionParser()->parseExpression();
             if (!$subtype instanceof ConstantExpression) {
-                throw new SyntaxError('The type reference in a "require" statement must be a string (got: ' . $subtype->getAttribute('name') . ').', $stream->getCurrent()->getLine(), $stream->getSourceContext());
+                throw new SyntaxError('The type reference in a "expect" statement must be a string (got: ' . $subtype->getAttribute('name') . ').', $stream->getCurrent()->getLine(), $stream->getSourceContext());
             }
     
             $typeName = 'array';
@@ -43,7 +43,7 @@ final class RequireTokenParser extends AbstractTokenParser
         else {
             $type = $this->parser->getExpressionParser()->parseExpression();
             if (!$type instanceof ConstantExpression) {
-                throw new SyntaxError('The type reference in a "require" statement must be a string (got: ' . $type->getAttribute('name') . ').', $stream->getCurrent()->getLine(), $stream->getSourceContext());
+                throw new SyntaxError('The type reference in a "expect" statement must be a string (got: ' . $type->getAttribute('name') . ').', $stream->getCurrent()->getLine(), $stream->getSourceContext());
             }
             
             $typeName = $type->getAttribute('value');
@@ -55,13 +55,13 @@ final class RequireTokenParser extends AbstractTokenParser
         
         $stream->expect(Token::BLOCK_END_TYPE);
         
-        return new RequireNode($typeName, $isNullable, $subtypeName, $isSubtypeNullable, $alias, $token->getLine(), $this->getTag());
+        return new ExpectNode($typeName, $isNullable, $subtypeName, $isSubtypeNullable, $alias, $token->getLine(), $this->getTag());
     }
     
     
     public function getTag(): string
     {
-        return 'require';
+        return 'expect';
     }
     
     
