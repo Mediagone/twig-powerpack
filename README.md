@@ -86,7 +86,7 @@ Arrays can also be nullable:
 
 Or contain nullable elements:
 ```twig
-{% require array of nullable 'App\\UI\\ViewModels\\Foo' as ARRAY %}
+{% expect array of nullable 'App\\UI\\ViewModels\\Foo' as ARRAY %}
 
 {% for foo in ARRAY %}
     {% if foo != null %}
