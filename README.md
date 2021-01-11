@@ -189,7 +189,7 @@ And include it at the end of the html page:
     
         <script>
         {% for js in registry('inlineJs') %}
-            {{ js }}
+            {{ js|raw }}
         {% endfor %}
         <!-- alert('Hello world'); -->
         </script>
