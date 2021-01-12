@@ -9,6 +9,7 @@
 This package provides:
 1. [Type-safety checks for template context variables](#feat1).
 2. [Register global data/resources from any template](#feat2).
+3. [Instantiate classes in templates](#feat3).
 
 
 ## Installation
@@ -219,6 +220,37 @@ However, unicity is only enforced **within the same registry**, so both followin
 ```twig
 {% register once '/styles.css' in 'css' %}
 {% register once '/styles.css' in 'styles' %}
+```
+
+
+### <a name="feat3"></a>3) Instantiate classes in templates
+
+Although it's better to do it in the controller when possible, you may need to create class instances directly in a template. The `new(string $fqcn, ...$args)` function allows you to call the constructor of a given class:
+
+```twig
+    {% include('Partials/Menu.twig') with {Menu: new('App\\UI\\Partials\\Menu',
+        Name: 'Main menu',
+        Items: [
+            {Label: 'Item 1', Href: '/url/to/item1'},
+            {Label: 'Item 2', Href: '/url/to/item2'},
+        ],
+    )} %}
+```
+Given the following View Model class:
+```php
+namespace App\UI\Partials;
+
+final class Menu
+{
+    private string $name;
+    private array $items;
+    
+    public function __construct(string $name, array $items)
+    {
+        $this->name = $name;
+        $this->items = array_map(static fn($item) => new MenuItem($item), $items);
+    }
+}
 ```
 
 
