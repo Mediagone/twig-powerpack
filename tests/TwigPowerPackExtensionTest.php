@@ -99,5 +99,15 @@ final class TwigPowerPackExtensionTest extends TestCase
     }
     
     
+    public function test_new_function_is_working_fine_with_multiple_args() : void
+    {
+        $resultString = $this->env->createTemplate("{{ new('Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\FooWithTwoArguments', 'some string', ['a', 'b']).stringArg }}")->render();
+        $resultArray = $this->env->createTemplate("{{ new('Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\FooWithTwoArguments', 'some string', ['a', 'b']).arrayArg|length }}")->render();
+        
+        self::assertSame('some string', $resultString);
+        self::assertSame('2', $resultArray);
+    }
+    
+    
     
 }

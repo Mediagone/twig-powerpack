@@ -5,23 +5,25 @@ namespace Tests\Mediagone\Twig\PowerPack;
 
 final class FooWithTwoArguments
 {
-    private string $arg1;
+    private string $stringArg;
     
-    public function getArg1() : string
+    public function getStringArg() : string
     {
-        return $this->arg1;
+        return $this->stringArg;
     }
     
-    private string $arg2;
+    private array $arrayArg;
     
-    public function getArg2() : string
+    public function getArrayArg() : array
     {
-        return $this->arg2;
+        return $this->arrayArg;
     }
     
-    public function __construct(string $arg1, string $arg2)
+    public function __construct(string $stringArg, array $arrayArg)
     {
-        $this->arg1 = $arg1;
-        $this->arg2 = $arg2;
+        $this->stringArg = $stringArg;
+        $this->arrayArg = $arrayArg;
     }
+    
+    
 }

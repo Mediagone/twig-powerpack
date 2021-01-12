@@ -36,10 +36,11 @@ final class NewClassTest extends TestCase
     
     public function test_can_create_instance_with_two_arguments() : void
     {
-        $instance = NewClass::createInstance(FooWithTwoArguments::class, 'some string', 'other string');
+        $instance = NewClass::createInstance(FooWithTwoArguments::class, 'some string', ['other string', 'another string']);
         self::assertInstanceOf(FooWithTwoArguments::class, $instance);
-        self::assertSame('some string', $instance->getArg1());
-        self::assertSame('other string', $instance->getArg2());
+        self::assertSame('some string', $instance->getStringArg());
+        self::assertIsArray($instance->getArrayArg());
+        self::assertCount(2, $instance->getArrayArg());
     }
     
     
