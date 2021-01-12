@@ -27,6 +27,9 @@ services:
         tags: [twig.extension]
 ```
 
+## Introduction
+
+Twig templating engine is seriously lacking types....
 
 ## Features
 
@@ -228,13 +231,13 @@ However, unicity is only enforced **within the same registry**, so both followin
 Although it's better to do it in the controller when possible, you may need to create class instances directly in a template. The `new(string $fqcn, ...$args)` function allows you to call the constructor of a given class:
 
 ```twig
-    {% include('Partials/Menu.twig') with {Menu: new('App\\UI\\Partials\\Menu',
-        'Main menu',
-        [
-            {Label: 'Item 1', Href: '/url/to/item1'},
-            {Label: 'Item 2', Href: '/url/to/item2'},
-        ],
-    )} %}
+{% include('Partials/Menu.twig') with {Menu: new('App\\UI\\Partials\\Menu',
+    'Main menu',
+    [
+        {Label: 'Item 1', Href: '/url/to/item1'},
+        {Label: 'Item 2', Href: '/url/to/item2'},
+    ],
+)} %}
 ```
 Given the following View Model class:
 ```php
