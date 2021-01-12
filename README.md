@@ -229,8 +229,8 @@ Although it's better to do it in the controller when possible, you may need to c
 
 ```twig
     {% include('Partials/Menu.twig') with {Menu: new('App\\UI\\Partials\\Menu',
-        Name: 'Main menu',
-        Items: [
+        'Main menu',
+        [
             {Label: 'Item 1', Href: '/url/to/item1'},
             {Label: 'Item 2', Href: '/url/to/item2'},
         ],
