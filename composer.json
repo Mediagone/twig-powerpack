@@ -1,7 +1,7 @@
 {
     "name": "mediagone/twig-powerpack",
     "type": "library",
-    "description": "Provides type-safety and useful helpers to your Twig templates.",
+    "description": "Provides code-quality and useful helpers to your Twig templates.",
     "keywords": ["twig", "extension", "quality"],
     "license": "MIT",
     "authors": [
