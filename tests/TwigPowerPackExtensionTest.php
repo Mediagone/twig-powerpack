@@ -81,4 +81,23 @@ final class TwigPowerPackExtensionTest extends TestCase
     
     
     
+    //========================================================================================================
+    // NEW
+    //========================================================================================================
+    
+    public function test_new_function_is_enabled() : void
+    {
+        self::assertNotNull($this->env->getFunction('new'));
+    }
+    
+    
+    public function test_new_function_is_working_fine() : void
+    {
+        $result = $this->env->createTemplate("{{ new('Tests\\\\Mediagone\\\\Twig\\\\PowerPack\\\\FooWithArgument', 'some string').arg }}")->render();
+        
+        self::assertSame('some string', $result);
+    }
+    
+    
+    
 }
