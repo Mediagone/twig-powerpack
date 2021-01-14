@@ -6,10 +6,13 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Software License][ico-license]](LICENSE)
 
-This package provides code-quality helpers to your Twig templates:
+This package provides code-quality features to your Twig templates:
 1. [Type-safety checks for template context variables](#feat1).
 2. [Register global data/resources from any template](#feat2).
 3. [Instantiate classes in templates](#feat3).
+
+Along with new functionalities:
+- `|json_decode` filter
 
 
 ## Installation

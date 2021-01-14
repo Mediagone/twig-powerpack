@@ -7,6 +7,7 @@ use Mediagone\Twig\PowerPack\TwigPowerPackExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\LoaderInterface;
+use function json_encode;
 
 
 /**
@@ -107,6 +108,19 @@ final class TwigPowerPackExtensionTest extends TestCase
         self::assertSame('some string', $resultString);
         self::assertSame('2', $resultArray);
     }
+    
+    
+    //========================================================================================================
+    // FILTERS
+    //========================================================================================================
+    
+    public function test_json_decode_filter_is_working_fine() : void
+    {
+        $result = $this->env->createTemplate("{{ (json|json_decode).msg }}")->render(['json' => json_encode(['msg' => 'Hello world'])]);
+        
+        self::assertSame('Hello world', $result);
+    }
+    
     
     
     

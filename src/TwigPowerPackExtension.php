@@ -7,7 +7,9 @@ use Mediagone\Twig\PowerPack\Tags\RegisterTokenParser;
 use Mediagone\Twig\PowerPack\Tags\ExpectTokenParser;
 use Mediagone\Twig\PowerPack\Functions\NewClass;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
+use function json_decode;
 
 
 final class TwigPowerPackExtension extends AbstractExtension
@@ -19,6 +21,14 @@ final class TwigPowerPackExtension extends AbstractExtension
     public function getName() : string
     {
         return 'TwigPowerPackExtension';
+    }
+    
+    
+    public function getFilters() : array
+    {
+        return [
+            new TwigFilter('json_decode', fn($json) => json_decode($json, false, 512, JSON_THROW_ON_ERROR)),
+        ];
     }
     
     
