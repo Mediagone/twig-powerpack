@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Error\SyntaxError;
 use Twig\Loader\LoaderInterface;
+use function array_keys;
 
 
 /**
@@ -114,6 +115,7 @@ final class RegisterTokenParserTest extends TestCase
     }
     
     
+    
     //========================================================================================================
     // BODY DATA
     //========================================================================================================
@@ -155,6 +157,147 @@ final class RegisterTokenParserTest extends TestCase
         self::assertCount(1, $messages);
         self::assertTrue(isset($messages['Hello world']));
         self::assertSame('Hello world', $messages['Hello world']);
+    }
+    
+    
+    
+    //========================================================================================================
+    // PRIORITY
+    //========================================================================================================
+    
+    public function test_can_register_data_with_priority() : void
+    {
+        self::assertCount(0, RegisterRegistry::read('js'));
+        
+        $this->env->createTemplate("{% register 'third.js' priority 3 %}")->render();
+        $this->env->createTemplate("{% register 'second.js' priority 2 %}")->render();
+        $this->env->createTemplate("{% register 'first.js' priority 1 %}")->render();
+        
+        $js = RegisterRegistry::read('js');
+        self::assertCount(3, $js);
+        self::assertSame('first.js', $js[0]);
+        self::assertSame('second.js', $js[1]);
+        self::assertSame('third.js', $js[2]);
+        
+        $this->env->createTemplate("{% register 'before.js' priority 0 %}")->render();
+        
+        $js = RegisterRegistry::read('js');
+        self::assertCount(4, $js);
+        self::assertSame('before.js', $js[0]);
+        self::assertSame('first.js', $js[1]);
+        self::assertSame('second.js', $js[2]);
+        self::assertSame('third.js', $js[3]);
+    }
+    
+    
+    public function test_can_register_unique_data_with_priority() : void
+    {
+        self::assertCount(0, RegisterRegistry::read('js'));
+        
+        $this->env->createTemplate("{% register once 'second.js' priority 1 %}")->render();
+        $this->env->createTemplate("{% register once 'second.js' priority 2 %}")->render();
+        $this->env->createTemplate("{% register once 'first.js' priority 1 %}")->render();
+        
+        $keys = array_keys(RegisterRegistry::read('js'));
+        self::assertCount(2, $keys);
+        self::assertSame('first.js', $keys[0]);
+        self::assertSame('second.js', $keys[1]);
+        
+        $this->env->createTemplate("{% register once 'before.js' priority 0 %}")->render();
+        
+        $keys = array_keys(RegisterRegistry::read('js'));
+        self::assertCount(3, $keys);
+        self::assertSame('before.js', $keys[0]);
+        self::assertSame('first.js', $keys[1]);
+        self::assertSame('second.js', $keys[2]);
+    }
+    
+    public function test_null_priority_come_last() : void
+    {
+        self::assertCount(0, RegisterRegistry::read('js'));
+        
+        $this->env->createTemplate("{% register 'second.js' %}")->render();
+        $this->env->createTemplate("{% register 'first.js' priority 1 %}")->render();
+        
+        $js = RegisterRegistry::read('js');
+        self::assertCount(2, $js);
+        self::assertSame('first.js', $js[0]);
+        self::assertSame('second.js', $js[1]);
+    
+        $this->env->createTemplate("{% register 'before.js' priority 0 %}")->render();
+    
+        $js = RegisterRegistry::read('js');
+        self::assertCount(3, $js);
+        self::assertSame('before.js', $js[0]);
+        self::assertSame('first.js', $js[1]);
+        self::assertSame('second.js', $js[2]);
+    }
+    
+    public function test_unique_null_priority_come_last() : void
+    {
+        self::assertCount(0, RegisterRegistry::read('js'));
+        
+        $this->env->createTemplate("{% register once 'second.js' %}")->render();
+        $this->env->createTemplate("{% register once 'first.js' priority 1 %}")->render();
+        
+        $js = array_keys(RegisterRegistry::read('js'));
+        self::assertCount(2, $js);
+        self::assertSame('first.js', $js[0]);
+        self::assertSame('second.js', $js[1]);
+        
+        $this->env->createTemplate("{% register once 'before.js' priority 0 %}")->render();
+        
+        $js = array_keys(RegisterRegistry::read('js'));
+        self::assertCount(3, $js);
+        self::assertSame('before.js', $js[0]);
+        self::assertSame('first.js', $js[1]);
+        self::assertSame('second.js', $js[2]);
+    }
+    
+    
+    public function test_can_register_body_with_priority() : void
+    {
+        $this->env->createTemplate("{% register in 'messages' priority 2 %}{{ msg }}{% endregister %}")->render(['msg' => 'second']);
+        $this->env->createTemplate("{% register in 'messages' priority 1 %}{{ msg }}{% endregister %}")->render(['msg' => 'first']);
+        
+        $messages = RegisterRegistry::read('messages');
+        self::assertCount(2, $messages);
+        self::assertSame('first', $messages[0]);
+        self::assertSame('second', $messages[1]);
+    }
+    
+    
+    public function test_can_register_unique_body_with_priority() : void
+    {
+        $this->env->createTemplate("{% register once in 'messages' priority 2 %}{{ msg }}{% endregister %}")->render(['msg' => 'second']);
+        $this->env->createTemplate("{% register once in 'messages' priority 1 %}{{ msg }}{% endregister %}")->render(['msg' => 'first']);
+        
+        $keys = array_keys(RegisterRegistry::read('messages'));
+        self::assertCount(2, $keys);
+        self::assertSame('first', $keys[0]);
+        self::assertSame('second', $keys[1]);
+    }
+    
+    
+    public function test_body_with_null_priority_come_last() : void
+    {
+        self::assertCount(0, RegisterRegistry::read('messages'));
+        
+        $this->env->createTemplate("{% register in 'messages' %}{{ msg }}{% endregister %}")->render(['msg' => 'second']);
+        $this->env->createTemplate("{% register in 'messages' priority 1 %}{{ msg }}{% endregister %}")->render(['msg' => 'first']);
+        
+        $js = RegisterRegistry::read('messages');
+        self::assertCount(2, $js);
+        self::assertSame('first', $js[0]);
+        self::assertSame('second', $js[1]);
+        
+        $this->env->createTemplate("{% register in 'messages' priority 0 %}{{ msg }}{% endregister %}")->render(['msg' => 'before']);
+        
+        $js = RegisterRegistry::read('messages');
+        self::assertCount(3, $js);
+        self::assertSame('before', $js[0]);
+        self::assertSame('first', $js[1]);
+        self::assertSame('second', $js[2]);
     }
     
     

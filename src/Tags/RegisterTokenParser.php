@@ -58,10 +58,11 @@ final class RegisterTokenParser extends AbstractTokenParser
             }
         }
         
+        $priority = $stream->nextIf('priority') ? $stream->expect(Token::NUMBER_TYPE)->getValue() : null;
         $stream->expect(Token::BLOCK_END_TYPE);
         
         $dataNode = new TextNode($data, $stream->getCurrent()->getLine());
-        return new RegisterNode($dataNode, $registryName, $unique, $token->getLine(), $this->getTag());
+        return new RegisterNode($dataNode, $registryName, $unique, $priority, $token->getLine(), $this->getTag());
     }
     
     
@@ -69,12 +70,14 @@ final class RegisterTokenParser extends AbstractTokenParser
     {
         $stream->expect(Token::OPERATOR_TYPE, 'in');
         $registryName = $stream->expect(Token::STRING_TYPE)->getValue();
+        
+        $priority = $stream->nextIf('priority') ? $stream->expect(Token::NUMBER_TYPE)->getValue() : null;
         $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
         
         $dataNode = $this->parser->subparse(fn(Token $token) => $token->test(Token::NAME_TYPE, 'endregister'), true);
         $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
         
-        return new RegisterNode($dataNode, $registryName, $unique, $token->getLine(), $this->getTag());
+        return new RegisterNode($dataNode, $registryName, $unique, $priority, $token->getLine(), $this->getTag());
     }
     
     

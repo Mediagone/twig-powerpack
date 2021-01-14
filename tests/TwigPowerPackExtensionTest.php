@@ -73,7 +73,7 @@ final class TwigPowerPackExtensionTest extends TestCase
         $result = $this->env->createTemplate("{{ registry('css')|length }}")->render();
         self::assertSame('0', $result);
         
-        RegisterRegistry::register('css', 'styles.css');
+        RegisterRegistry::register('css', 'styles.css', null, 0);
         
         $result = $this->env->createTemplate("{{ registry('css')|length }}")->render();
         self::assertSame('1', $result);

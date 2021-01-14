@@ -33,6 +33,7 @@ Twig templating engine is seriously lacking types....
 
 ## Features
 
+
 ### <a name="feat1"></a>1) Context Variables type-checking
 
 Templates usually require specific external data, but there is no native way to check the type of supplied variables. The `expect` tag allows you to **declare required variables** in your Twig files, making them also **self-documenting**. If the data is invalid, an exception will be thrown.
@@ -107,6 +108,7 @@ And even nullable array of nullable elements!
 _Note: Checking array's items type might induce a slight overhead, but unless you have thousands of elements it should be negligible._
 
 
+---
 
 ### <a name="feat2"></a>2) Register global data from any template
 
@@ -225,6 +227,27 @@ However, unicity is only enforced **within the same registry**, so both followin
 {% register once '/styles.css' in 'styles' %}
 ```
 
+#### Priority
+
+As you cannot always predict in which order data will be registered, you'll sometime need to ensure a data comes first, for example in the case of a script library required by others. Then, add the 
+`priority` keyword at the end of your tag followed by a priority number (lower values come first*).
+
+Tags without priority always come after prioritized ones.
+
+_Note: the order of data with the same priority (or undefined) is not guaranteed._
+
+```twig
+{% register '/last.js' %}
+{% register '/second.js' priority 2 %}
+{% register '/first.js' priority 1 %}
+
+<!-- <script src="/first.js"></script> -->
+<!-- <script src="/second.js"></script> -->
+<!-- <script src="/last.js"></script> -->
+```
+
+
+---
 
 ### <a name="feat3"></a>3) Instantiate classes in templates
 
