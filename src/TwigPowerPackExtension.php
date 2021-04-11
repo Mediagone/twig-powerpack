@@ -2,13 +2,15 @@
 
 namespace Mediagone\Twig\PowerPack;
 
+use Mediagone\Twig\PowerPack\Functions\NewClass;
+use Mediagone\Twig\PowerPack\Tags\ExpectTokenParser;
 use Mediagone\Twig\PowerPack\Tags\RegisterRegistry;
 use Mediagone\Twig\PowerPack\Tags\RegisterTokenParser;
-use Mediagone\Twig\PowerPack\Tags\ExpectTokenParser;
-use Mediagone\Twig\PowerPack\Functions\NewClass;
+use Mediagone\Twig\PowerPack\Tests\IsInstanceOf;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use Twig\TwigTest;
 use function json_decode;
 
 
@@ -37,6 +39,14 @@ final class TwigPowerPackExtension extends AbstractExtension
         return [
             new TwigFunction('registry', [new RegisterRegistry(), 'read']),
             new TwigFunction('new', [new NewClass(), 'createInstance']),
+        ];
+    }
+    
+    
+    public function getTests() : array
+    {
+        return [
+            new TwigTest('instanceof', [new IsInstanceOf(), 'instanceOf']),
         ];
     }
     
