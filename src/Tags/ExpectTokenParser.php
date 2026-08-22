@@ -53,6 +53,13 @@ final class ExpectTokenParser extends AbstractTokenParser
             }
             
             $typeName = $type->getAttribute('value');
+            if ($typeName === 'array') {
+                // Arrays are only checkable through their items type, so "'array'" as a bare type name is a
+                // declaration that would guarantee nothing: point at the supported syntax instead of failing
+                // later on a missing subtype.
+                throw new SyntaxError('An array must declare the type of its items: use "{% expect array of \'Type\' as VAR %}" instead of "{% expect \'array\' as VAR %}".', $stream->getCurrent()->getLine(), $stream->getSourceContext());
+            }
+            
             $subtypeName = null;
             $isSubtypeNullable = false;
         }

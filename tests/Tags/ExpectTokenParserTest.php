@@ -359,6 +359,14 @@ final class ExpectTokenParserTest extends TestCase
     }
 
 
+    public function test_array_type_requires_an_item_type() : void
+    {
+        $this->expectException(SyntaxError::class);
+        $this->env->createTemplate("{% expect 'array' as ARRAY %}");
+    }
+
+
+
     //========================================================================================================
     // OPTIONAL
     //========================================================================================================

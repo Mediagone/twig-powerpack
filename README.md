@@ -104,6 +104,11 @@ You can also check if a variable is an array of a given type by using the `array
 {% endfor %}
 ```
 
+The item type is **required**: an array is only checkable through what it contains, so `{% expect 'array'
+as ARRAY %}` is refused with a syntax error rather than accepted as a declaration guaranteeing nothing.
+A heterogeneous array — a bag of unrelated fields — is a hint that the data should be exposed as a named
+class instead (see [Objects](#objects) above).
+
 Arrays can also be nullable:
 ```twig
 {% expect nullable array of 'App\\UI\\ViewModels\\Foo' as ARRAY %}
