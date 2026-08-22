@@ -34,6 +34,20 @@ final class TwigPowerPackExtensionTest extends TestCase
         
         RegisterRegistry::clear();
     }
+
+
+    /**
+     * The tags declared by the extension, read from the extension itself: Environment::getTags() was
+     * removed in Twig 3, and the tag list is not exposed anywhere else.
+     *
+     * @return string[]
+     */
+    private function getExtensionTags() : array
+    {
+        $parsers = $this->env->getExtension(TwigPowerPackExtension::class)->getTokenParsers();
+
+        return array_map(static fn($parser) => $parser->getTag(), $parsers);
+    }
     
     
     
@@ -43,7 +57,7 @@ final class TwigPowerPackExtensionTest extends TestCase
     
     public function test_require_tag_is_enabled() : void
     {
-        self::assertTrue(isset($this->env->getTags()['expect']));
+        self::assertContains('expect', $this->getExtensionTags());
     }
     
     
@@ -54,7 +68,7 @@ final class TwigPowerPackExtensionTest extends TestCase
     
     public function test_register_tag_is_enabled() : void
     {
-        self::assertTrue(isset($this->env->getTags()['register']));
+        self::assertContains('register', $this->getExtensionTags());
     }
     
     
