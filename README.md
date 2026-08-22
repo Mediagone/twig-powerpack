@@ -308,6 +308,39 @@ final class Menu
 }
 ```
 
+#### Named arguments
+
+Twig has no native way to target a variadic Twig function's underlying constructor parameters by name —
+`new(class_name, params)` only exposes `class_name` and `params` to Twig, so a named argument can never
+reach a constructor parameter through them. Passing a **single, non-empty associative array** (every key a
+string) works around this: `new()` spreads it as PHP named arguments, exactly as `new $class(...$data)`
+would:
+
+```twig
+{{ new('App\\UI\\ViewModels\\MenuLink', {Label: 'Item 1', Href: '/url/to/item1', Show: isSuperAdmin}) }}
+```
+
+This requires **PHP 8.0+**, the version that introduced named arguments and array spreading into them. There
+is no fallback on PHP 7.4: the engine rejects the spread itself with `Error: Cannot unpack array with string
+keys`, so templates targeting 7.4 must keep passing constructor arguments positionally.
+
+Unknown keys and wrong-typed values are reported by PHP itself, against the constructor's own signature: a
+key with no matching parameter raises `Error: Unknown named parameter "..."`, and a value of the wrong type
+raises a `TypeError` — the same guarantees as calling the constructor directly from PHP.
+
+Every other shape of `params` — no argument, several arguments, an empty array, or an array containing at
+least one numeric key — is left untouched and passed positionally, exactly as before.
+
+#### Positional escape hatch
+
+If a class's constructor legitimately expects an associative array as one of its positional parameters,
+spreading it as named arguments would be wrong. Use `new_positional(string $fqcn, ...$args)` instead: it
+always passes its arguments positionally, whatever their shape:
+
+```twig
+{{ new_positional('App\\UI\\ViewModels\\RawPayload', {Label: 'Item 1', Href: '/url/to/item1'}) }}
+```
+
 
 ## License
 

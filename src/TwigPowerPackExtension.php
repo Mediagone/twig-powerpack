@@ -39,6 +39,7 @@ final class TwigPowerPackExtension extends AbstractExtension
         return [
             new TwigFunction('registry', [new RegisterRegistry(), 'read']),
             new TwigFunction('new', [new NewClass(), 'createInstance']),
+            new TwigFunction('new_positional', [new NewClass(), 'createInstancePositional']),
         ];
     }
     
