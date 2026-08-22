@@ -8,6 +8,7 @@ use Mediagone\Twig\PowerPack\Tags\ExpectTokenParser;
 use PHPUnit\Framework\TestCase;
 use Tests\Mediagone\Twig\PowerPack\Foo;
 use Twig\Environment;
+use Twig\Error\SyntaxError;
 use Twig\Loader\LoaderInterface;
 use function substr;
 
@@ -356,7 +357,72 @@ final class ExpectTokenParserTest extends TestCase
         $result = $this->env->createTemplate("{% expect nullable array of nullable 'string' as ARRAY %}")->render(['ARRAY' => null]);
         self::assertSame('', $result);
     }
-    
-    
-    
+
+
+    //========================================================================================================
+    // OPTIONAL
+    //========================================================================================================
+
+    public function test_optional_variable_can_be_missing() : void
+    {
+        $result = $this->env->createTemplate("{% expect optional 'string' as VAR %}")->render([]);
+        self::assertSame('', $result);
+    }
+
+
+    public function test_optional_variable_is_checked_when_provided() : void
+    {
+        $result = $this->env->createTemplate("{% expect optional 'string' as VAR %}")->render(['VAR' => 'Lorem ipsum']);
+        self::assertSame('', $result);
+    }
+
+
+    public function test_optional_variable_is_invalid_when_provided() : void
+    {
+        $this->expectException(Exception::class);
+        $this->env->createTemplate("{% expect optional 'string' as VAR %}")->render(['VAR' => 1]);
+    }
+
+
+    public function test_optional_variable_cannot_be_null_unless_nullable() : void
+    {
+        $this->expectException(Exception::class);
+        $this->env->createTemplate("{% expect optional 'string' as VAR %}")->render(['VAR' => null]);
+    }
+
+
+    public function test_optional_can_be_combined_with_nullable() : void
+    {
+        $template = $this->env->createTemplate("{% expect optional nullable 'DateTime' as DATETIME %}");
+
+        self::assertSame('', $template->render([]));
+        self::assertSame('', $template->render(['DATETIME' => null]));
+        self::assertSame('', $template->render(['DATETIME' => new DateTime()]));
+    }
+
+
+    public function test_optional_can_be_combined_with_array_of() : void
+    {
+        $template = $this->env->createTemplate("{% expect optional array of 'string' as ARRAY %}");
+
+        self::assertSame('', $template->render([]));
+        self::assertSame('', $template->render(['ARRAY' => ['Lorem ipsum']]));
+    }
+
+
+    public function test_optional_keyword_must_come_first() : void
+    {
+        $this->expectException(SyntaxError::class);
+        $this->env->createTemplate("{% expect nullable optional 'string' as VAR %}");
+    }
+
+
+    public function test_optional_keyword_is_refused_before_an_array_item_type() : void
+    {
+        $this->expectException(SyntaxError::class);
+        $this->env->createTemplate("{% expect array of optional 'string' as ARRAY %}");
+    }
+
+
+
 }

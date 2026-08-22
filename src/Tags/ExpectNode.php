@@ -16,7 +16,9 @@ final class ExpectNode extends Node
     private string $typeName;
     
     private bool $isNullable;
-    
+
+    private bool $isOptional;
+
     private ?string $subtypeName;
     
     private bool $isSubtypeNullable;
@@ -29,10 +31,11 @@ final class ExpectNode extends Node
     // Constructors
     //========================================================================================================
     
-    public function __construct(string $typeName, bool $isNullable, ?string $subtypeName, bool $isSubtypeNullable, string $variableName, int $lineno, string $tag)
+    public function __construct(string $typeName, bool $isNullable, bool $isOptional, ?string $subtypeName, bool $isSubtypeNullable, string $variableName, int $lineno, string $tag)
     {
         $this->typeName = $typeName;
         $this->isNullable = $isNullable;
+        $this->isOptional = $isOptional;
         $this->subtypeName = $subtypeName;
         $this->isSubtypeNullable = $isSubtypeNullable;
         $this->variableName = $variableName;
@@ -50,7 +53,16 @@ final class ExpectNode extends Node
         $compiler->addDebugInfo($this);
         $compiler->write("\$templateName = \$this->source->getName();\n");
         
-        $this->checkIfVariableIsDefined($compiler);
+        if ($this->isOptional) {
+            // An optional variable is only checked when the template is actually given one: a missing key is
+            // a valid case, unlike "nullable", which requires the key to be there and to hold NULL.
+            $compiler->write("// Optional context variable, only checked when provided\n");
+            $compiler->write("if (array_key_exists('$this->variableName', \$context)) {\n")->indent();
+        }
+        else {
+            $this->checkIfVariableIsDefined($compiler);
+        }
+
         $compiler->write("\$contextVariable = \$context['$this->variableName'];\n");
     
         if ($this->typeName === 'array') {
@@ -72,6 +84,10 @@ final class ExpectNode extends Node
         else {
             $this->checkIfClassExists($compiler);
             $this->checkIfClassInstance($compiler);
+        }
+
+        if ($this->isOptional) {
+            $compiler->outdent()->write("}\n");
         }
     }
     

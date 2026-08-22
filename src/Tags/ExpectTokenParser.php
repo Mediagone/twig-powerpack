@@ -6,6 +6,7 @@ use Twig\Error\SyntaxError;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Node;
 use Twig\Token;
+use Twig\TokenStream;
 use Twig\TokenParser\AbstractTokenParser;
 
 
@@ -24,7 +25,11 @@ final class ExpectTokenParser extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
         
-        $isNullable = $stream->nextIf('nullable') !== null;
+        // The "optional" keyword always comes first, right after the tag name, so that every declaration
+        // reads in the same order: optionality, then nullability, then type.
+        $isOptional = $stream->nextIf(Token::NAME_TYPE, 'optional') !== null;
+        $isNullable = $stream->nextIf(Token::NAME_TYPE, 'nullable') !== null;
+        $this->checkOptionalKeywordPosition($stream);
         
         if ($stream->nextIf('array') !== null) {
             if (! $stream->nextIf('of')) {
@@ -32,6 +37,7 @@ final class ExpectTokenParser extends AbstractTokenParser
             }
             
             $isSubtypeNullable = $stream->nextIf('nullable') !== null;
+            $this->checkOptionalKeywordPosition($stream);
             $subtype = $this->parser->getExpressionParser()->parseExpression();
             if (!$subtype instanceof ConstantExpression) {
                 throw new SyntaxError('The type reference in a "expect" statement must be a string (got: ' . $subtype->getAttribute('name') . ').', $stream->getCurrent()->getLine(), $stream->getSourceContext());
@@ -55,13 +61,29 @@ final class ExpectTokenParser extends AbstractTokenParser
         
         $stream->expect(Token::BLOCK_END_TYPE);
         
-        return new ExpectNode($typeName, $isNullable, $subtypeName, $isSubtypeNullable, $alias, $token->getLine(), $this->getTag());
+        return new ExpectNode($typeName, $isNullable, $isOptional, $subtypeName, $isSubtypeNullable, $alias, $token->getLine(), $this->getTag());
     }
     
     
     public function getTag(): string
     {
         return 'expect';
+    }
+    
+    
+    
+    //========================================================================================================
+    // Private Helpers
+    //========================================================================================================
+    
+    /**
+     * Fails explicitly when "optional" is written anywhere else than right after the tag name.
+     */
+    private function checkOptionalKeywordPosition(TokenStream $stream) : void
+    {
+        if ($stream->test(Token::NAME_TYPE, 'optional')) {
+            throw new SyntaxError('The "optional" keyword must be placed right after the tag name (eg. {% expect optional nullable \'Foo\' as FOO %}).', $stream->getCurrent()->getLine(), $stream->getSourceContext());
+        }
     }
     
     

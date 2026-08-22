@@ -72,6 +72,27 @@ Sometimes, you may want to ensure that a variable is defined while making it opt
 {% endif %}
 ```
 
+#### Optional
+While `nullable` still requires the variable to be **defined** (it only allows its value to be NULL), a
+variable may legitimately not be supplied at all — a parameter of an included template that has a default
+value, for instance. Use the `optional` keyword: the variable is then only type-checked when it is
+provided, and its absence is not an error.
+
+```twig
+{% expect optional 'string' as CLASSES %}
+
+<div class="{{ CLASSES|default('') }}">...</div>
+```
+
+`optional` **must be placed right after the tag name**, before every other keyword, so that a declaration
+always reads in the same order (optionality, then nullability, then type). Any other position is a syntax
+error. It can be combined with `nullable` (the variable may be missing, _or_ hold NULL) and with `array of`:
+
+```twig
+{% expect optional nullable 'App\\UI\\ViewModels\\Foo' as FOO %}
+{% expect optional array of 'App\\UI\\ViewModels\\Foo' as ITEMS %}
+```
+
 #### Arrays
 You can also check if a variable is an array of a given type by using the `array of` keywords:
 
